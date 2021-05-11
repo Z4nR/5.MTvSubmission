@@ -82,7 +82,7 @@ class ShowRepository private constructor(private val remoteDataSource: RemoteDat
 
             override fun createCall(): LiveData<ApiResponse<List<ResultsMovies>>> {
                 val mListTV = MutableLiveData<ApiResponse<List<ResultsMovies>>>()
-                remoteDataSource.getMovieList(
+                remoteDataSource.getTVShowList(
                     page_tv,
                     object : RemoteDataSource.LoadListCallback {
                         override fun onAllListReceive(resultsItem: ApiResponse<List<ResultsMovies>>) {
