@@ -198,26 +198,4 @@ class HomeUITest {
             .check(matches(isDisplayed()))
     }
 
-    @Test
-    fun loadMovieShowFavDelete(){
-        onView(withId(R.id.fabMenu))
-            .perform(click())
-        onView(withId(R.id.tabs))
-            .check(matches(isDisplayed()))
-        onView(allOf(isDisplayed(), withId(R.id.rvFavorite)))
-            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeLeft()))
-    }
-
-    @Test
-    fun loadTVShowFavDelete(){
-        onView(withId(R.id.fabMenu))
-            .perform(click())
-        onView(withId(R.id.view_pager))
-            .perform(ViewPagerActions.scrollRight(true))
-        onView(withId(R.id.tabs))
-            .check(matches(isDisplayed()))
-        onView(allOf(isDisplayed(), withId(R.id.rvFavorite)))
-            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeLeft()))
-    }
-
 }
