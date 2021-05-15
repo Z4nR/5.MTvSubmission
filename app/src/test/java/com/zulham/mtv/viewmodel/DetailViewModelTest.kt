@@ -3,27 +3,28 @@ package com.zulham.mtv.viewmodel
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.verify
 import com.zulham.mtv.data.Genres
 import com.zulham.mtv.data.PH
 import com.zulham.mtv.data.ShowEntity
-import com.zulham.mtv.data.remote.response.GenresItemMovies
-import com.zulham.mtv.data.remote.response.ProductionCompaniesItemMovies
-import com.zulham.mtv.data.remote.response.ShowResponseMovies
+import com.zulham.mtv.data.local.room.entity.DataEntity
+import com.zulham.mtv.data.local.room.entity.DetailEntity
+import com.zulham.mtv.data.local.room.entity.GenresItemMovies
+import com.zulham.mtv.data.local.room.entity.ProductionCompaniesItemMovies
 import com.zulham.mtv.data.repository.ShowRepository
 import com.zulham.mtv.ui.detail.DetailActivity.Companion.MOVIE
 import com.zulham.mtv.ui.detail.DetailActivity.Companion.TV_SHOW
 import com.zulham.mtv.ui.detail.DetailViewModel
 import com.zulham.mtv.utils.DummyData
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertNotNull
+import com.zulham.mtv.vo.Resources
 import kotlinx.coroutines.InternalCoroutinesApi
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
 
@@ -59,7 +60,7 @@ class DetailViewModelTest {
     private lateinit var showRepository: ShowRepository
 
     @Mock
-    private lateinit var  observer: Observer<ShowResponseMovies>
+    private lateinit var  observer: Observer<Resources<DetailEntity>>
 
     @Before
     fun setUp(){
@@ -75,7 +76,7 @@ class DetailViewModelTest {
         val genre = dataDetail.genre?.map { it ->
             GenresItemMovies(it.name)
         }
-        val moviesDetail = ShowResponseMovies(
+        val moviesDetail = DetailEntity(
                 dataDetail.backdrop,
                 dataDetail.description,
                 production,
@@ -84,18 +85,18 @@ class DetailViewModelTest {
                 dataDetail.showId,
                 dataDetail.title,
                 dataDetail.img)
-        val movies = MutableLiveData<ShowResponseMovies>()
-        movies.value = moviesDetail
+        val movies = MutableLiveData<Resources<DetailEntity>>()
+        movies.value = Resources.success(moviesDetail)
 
         `when`(showRepository.getMovieDetail(1)).thenReturn(movies)
         val getData = dummyMovie.showId?.let { detailViewModel.setSelectedShow(it) }
         dummyMovie.showId?.let { detailViewModel.getData(MOVIE, it) }
         verify(showRepository).getMovieDetail(1)
-        assertNotNull(getData)
-        assertEquals(dataDetail, dummyMovie)
+        Assert.assertNotNull(getData)
+        Assert.assertEquals(dataDetail, dummyMovie)
 
         detailViewModel.getData(MOVIE, 1).observeForever(observer)
-        Mockito.verify(observer).onChanged(moviesDetail)
+        verify(observer).onChanged(Resources.success(moviesDetail))
     }
 
     @Test
@@ -107,7 +108,7 @@ class DetailViewModelTest {
         val genre = dataDetail.genre?.map { it ->
             GenresItemMovies(it.name)
         }
-        val tvDetail = ShowResponseMovies(
+        val tvDetail = DetailEntity(
                 dataDetail.backdrop,
                 dataDetail.description,
                 production,
@@ -116,18 +117,58 @@ class DetailViewModelTest {
                 dataDetail.showId,
                 dataDetail.title,
                 dataDetail.img)
-        val tv = MutableLiveData<ShowResponseMovies>()
-        tv.value = tvDetail
+        val tv = MutableLiveData<Resources<DetailEntity>>()
+        tv.value = Resources.success(tvDetail)
 
         `when`(showRepository.getTVDetail(1)).thenReturn(tv)
         val getData = dummyTV.showId?.let { detailViewModel.setSelectedShow(it) }
         dummyTV.showId?.let { detailViewModel.getData(TV_SHOW, it) }
         verify(showRepository).getTVDetail(1)
-        assertNotNull(getData)
-        assertEquals(dataDetail, dummyTV)
+        Assert.assertNotNull(getData)
+        Assert.assertEquals(dataDetail, dummyTV)
 
         detailViewModel.getData(TV_SHOW, 1).observeForever(observer)
-        Mockito.verify(observer).onChanged(tvDetail)
+        verify(observer).onChanged(Resources.success(tvDetail))
+    }
+
+    @Test
+    fun setFav(){
+        val dataDetail = DummyData.generateDummyMovie()[0]
+        val moviesDetail = DataEntity(
+            dataDetail.description,
+            dataDetail.title,
+            dataDetail.img,
+            dataDetail.backdrop,
+            dataDetail.releaseDate,
+            dataDetail.showId,
+            false,
+            null
+        )
+        val boolean = 1
+        doNothing().`when`(showRepository).setFav(boolean)
+        detailViewModel.addFav(moviesDetail)
+
+        verify(showRepository).setFav(boolean)
+    }
+
+    @Test
+    fun deleteFav(){
+        val dataDetail = DummyData.generateDummyMovie()[0]
+        val tvDetail = DataEntity(
+            dataDetail.description,
+            dataDetail.title,
+            dataDetail.img,
+            dataDetail.backdrop,
+            dataDetail.releaseDate,
+            dataDetail.showId,
+            false,
+            null
+        )
+        val boolean = 1
+        doNothing().`when`(showRepository).deleteFav(boolean)
+        detailViewModel.deleteFav(tvDetail)
+
+        verify(showRepository).deleteFav(boolean)
     }
 
 }

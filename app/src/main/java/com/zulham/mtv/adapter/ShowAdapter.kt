@@ -3,6 +3,8 @@ package com.zulham.mtv.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -10,7 +12,22 @@ import com.zulham.mtv.R
 import com.zulham.mtv.data.local.room.entity.DataEntity
 import kotlinx.android.synthetic.main.list_item.view.*
 
-class ShowAdapter(private val show: List<DataEntity>) : RecyclerView.Adapter<ShowAdapter.ViewHolder>() {
+class ShowAdapter : PagedListAdapter<DataEntity, ShowAdapter.ViewHolder>(DIFF_CALLBACK) {
+
+    companion object {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<DataEntity>(){
+            override fun areItemsTheSame(oldItem: DataEntity, newItem: DataEntity): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(oldItem: DataEntity, newItem: DataEntity): Boolean {
+                return oldItem == newItem
+            }
+
+        }
+    }
+
+    fun getSwipeData(swipePosition: Int): DataEntity? = getItem(swipePosition)
 
     private var onItemClickCallback: OnItemClickCallback? = null
 
@@ -51,8 +68,6 @@ class ShowAdapter(private val show: List<DataEntity>) : RecyclerView.Adapter<Sho
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(show[position])
+        getItem(position)?.let { holder.bind(it) }
     }
-
-    override fun getItemCount(): Int = show.size
 }

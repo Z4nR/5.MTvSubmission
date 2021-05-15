@@ -1,6 +1,7 @@
 package com.zulham.mtv.data.local.room
 
 import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -14,10 +15,10 @@ import com.zulham.mtv.utils.ShowType.TV_TYPE
 interface ShowDao {
 
     @Query("SELECT * FROM ShowData WHERE isType = $MOVIE_TYPE")
-    fun getMovieData(): LiveData<List<DataEntity>>
+    fun getMovieData(): DataSource.Factory<Int, DataEntity>
 
     @Query("SELECT * FROM ShowData WHERE isType = $TV_TYPE")
-    fun getTVsData(): LiveData<List<DataEntity>>
+    fun getTVsData(): DataSource.Factory<Int, DataEntity>
 
     @Query("SELECT * FROM ShowDetail WHERE id = :movieId and isType = $MOVIE_TYPE")
     fun getMovieDetail(movieId: Int): LiveData<DetailEntity>
@@ -26,10 +27,10 @@ interface ShowDao {
     fun getTVsDetail(tvId: Int): LiveData<DetailEntity>
 
     @Query("SELECT * FROM ShowData WHERE isFav = 1 and isType = $MOVIE_TYPE")
-    fun getFavMovie(): LiveData<List<DataEntity>>
+    fun getFavMovie(): DataSource.Factory<Int, DataEntity>
 
     @Query("SELECT * FROM ShowData WHERE isFav = 1 and isType = $TV_TYPE")
-    fun getFavTV(): LiveData<List<DataEntity>>
+    fun getFavTV(): DataSource.Factory<Int, DataEntity>
 
     @Query("UPDATE ShowData set isFav = 1 WHERE id = :id")
     fun setFav(id: Int)

@@ -10,6 +10,7 @@ import com.zulham.mtv.R
 import com.zulham.mtv.data.local.room.entity.DetailEntity
 import com.zulham.mtv.utils.Factory
 import kotlinx.android.synthetic.main.activity_detail.*
+import kotlinx.android.synthetic.main.activity_detail_favorite.*
 import kotlinx.coroutines.InternalCoroutinesApi
 
 @InternalCoroutinesApi

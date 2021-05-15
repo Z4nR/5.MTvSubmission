@@ -1,6 +1,7 @@
 package com.zulham.mtv.data.local
 
 import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import com.zulham.mtv.data.local.room.ShowDao
 import com.zulham.mtv.data.local.room.entity.DataEntity
 import com.zulham.mtv.data.local.room.entity.DetailEntity
@@ -22,11 +23,11 @@ class LocalDataSource private constructor(private val showDao: ShowDao){
         return showDao.insertShowDetail(detail)
     }
 
-    fun getMovieData(): LiveData<List<DataEntity>> {
+    fun getMovieData(): DataSource.Factory<Int, DataEntity> {
         return showDao.getMovieData()
     }
 
-    fun getTVsData(): LiveData<List<DataEntity>> {
+    fun getTVsData(): DataSource.Factory<Int, DataEntity> {
         return showDao.getTVsData()
     }
 
@@ -42,11 +43,11 @@ class LocalDataSource private constructor(private val showDao: ShowDao){
         return showDao.setFav(id)
     }
 
-    fun getFavMovie(): LiveData<List<DataEntity>>{
+    fun getFavMovie(): DataSource.Factory<Int, DataEntity> {
         return showDao.getFavMovie()
     }
 
-    fun getFavTV(): LiveData<List<DataEntity>>{
+    fun getFavTV(): DataSource.Factory<Int, DataEntity> {
         return showDao.getFavTV()
     }
 

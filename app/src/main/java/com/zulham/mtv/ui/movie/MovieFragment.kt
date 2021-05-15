@@ -36,6 +36,8 @@ class MovieFragment : Fragment() {
 
     private lateinit var movieViewModel: MovieViewModel
 
+    private val showAdapter = ShowAdapter()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -54,6 +56,24 @@ class MovieFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        showAdapter.setOnItemClickCallback(object : ShowAdapter.OnItemClickCallback{
+            override fun onItemClicked(data: DataEntity) {
+                val intent = Intent(context, DetailActivity::class.java)
+                val arg = arguments?.getInt(ARG_SECTION_NUMBER)
+                val type = if (arg == MOVIE_TYPE) MOVIE else TV_SHOW
+                intent.putExtra(EXTRA_SHOW, data.id)
+                intent.putExtra(EXTRA_TYPE, type)
+                startActivity(intent)
+            }
+
+        })
+
+        rvMovie.apply {
+            this.adapter = showAdapter
+            layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+            setHasFixedSize(true)
+        }
+
         val showType = arguments?.getInt(ARG_SECTION_NUMBER)
 
         showLoading(true)
@@ -69,16 +89,16 @@ class MovieFragment : Fragment() {
             if (showType == MOVIE_TYPE) it.getDataMovie() else it.getDataTV()
         }
 
-        getData.observe(viewLifecycleOwner, { it ->
-            if (it != null){
-                when (it.status) {
+        getData.observe(viewLifecycleOwner, { show ->
+            if (show != null){
+                when (show.status) {
                     Status.LOADING -> {
                         showLoading(true)
                         error_data.visibility = View.GONE
                     }
                     Status.SUCCESS -> {
                         showLoading(false)
-                        it.data?.let { recyclerV(it) }
+                        show.data.let { showAdapter.submitList(it) }
                         error_data.visibility = View.GONE
                     }
                     Status.ERROR -> {
@@ -90,28 +110,6 @@ class MovieFragment : Fragment() {
             }
         })
 
-    }
-
-    private fun recyclerV(films: List<DataEntity>) {
-        rvMovie.apply {
-            val filmAdapter = ShowAdapter(films)
-
-            adapter = filmAdapter
-
-            filmAdapter.setOnItemClickCallback(object : ShowAdapter.OnItemClickCallback{
-                override fun onItemClicked(data: DataEntity) {
-                    val intent = Intent(context, DetailActivity::class.java)
-                    val arg = arguments?.getInt(ARG_SECTION_NUMBER)
-                    val type = if (arg == MOVIE_TYPE) MOVIE else TV_SHOW
-                    intent.putExtra(EXTRA_SHOW, data.id)
-                    intent.putExtra(EXTRA_TYPE, type)
-                    startActivity(intent)
-                }
-
-            })
-
-            layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-        }
     }
 
     private fun showLoading(state: Boolean) {

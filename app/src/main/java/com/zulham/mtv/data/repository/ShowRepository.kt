@@ -2,6 +2,8 @@ package com.zulham.mtv.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
 import com.zulham.mtv.data.NetworkResource
 import com.zulham.mtv.data.local.LocalDataSource
 import com.zulham.mtv.data.local.room.entity.DataEntity
@@ -31,12 +33,19 @@ class ShowRepository private constructor(private val remoteDataSource: RemoteDat
             }
     }
 
-    override fun getMovieList(page_movie: Int): LiveData<Resources<List<DataEntity>>> {
-        return object : NetworkResource<List<DataEntity>, List<ResultsMovies>>(appExecutors){
+    override fun getMovieList(page_movie: Int): LiveData<Resources<PagedList<DataEntity>>> {
+        return object : NetworkResource<PagedList<DataEntity>, List<ResultsMovies>>(appExecutors){
 
-            override fun loadFromDB(): LiveData<List<DataEntity>> = localDataSource.getMovieData()
+            override fun loadFromDB(): LiveData<PagedList<DataEntity>> {
+                val config = PagedList.Config.Builder()
+                    .setEnablePlaceholders(false)
+                    .setInitialLoadSizeHint(4)
+                    .setPageSize(4)
+                    .build()
+                return LivePagedListBuilder(localDataSource.getMovieData(), config).build()
+            }
 
-            override fun shouldFetch(data: List<DataEntity>?): Boolean =
+            override fun shouldFetch(data: PagedList<DataEntity>?): Boolean =
                 data == null || data.isNullOrEmpty()
 
             override fun createCall(): LiveData<ApiResponse<List<ResultsMovies>>> {
@@ -73,11 +82,18 @@ class ShowRepository private constructor(private val remoteDataSource: RemoteDat
 
     }
 
-    override fun getTVShowList(page_tv: Int): LiveData<Resources<List<DataEntity>>> {
-        return object : NetworkResource<List<DataEntity>, List<ResultsMovies>>(appExecutors){
-            override fun loadFromDB(): LiveData<List<DataEntity>> = localDataSource.getTVsData()
+    override fun getTVShowList(page_tv: Int): LiveData<Resources<PagedList<DataEntity>>> {
+        return object : NetworkResource<PagedList<DataEntity>, List<ResultsMovies>>(appExecutors){
+            override fun loadFromDB(): LiveData<PagedList<DataEntity>> {
+                val config = PagedList.Config.Builder()
+                    .setEnablePlaceholders(false)
+                    .setInitialLoadSizeHint(4)
+                    .setPageSize(4)
+                    .build()
+                return LivePagedListBuilder(localDataSource.getTVsData(), config).build()
+            }
 
-            override fun shouldFetch(data: List<DataEntity>?): Boolean =
+            override fun shouldFetch(data: PagedList<DataEntity>?): Boolean =
                 data == null || data.isNullOrEmpty()
 
             override fun createCall(): LiveData<ApiResponse<List<ResultsMovies>>> {
@@ -199,12 +215,22 @@ class ShowRepository private constructor(private val remoteDataSource: RemoteDat
         }.asLiveData()
     }
 
-    override fun getFavMovie(): LiveData<List<DataEntity>> {
-        return localDataSource.getFavMovie()
+    override fun getFavMovie(): LiveData<PagedList<DataEntity>> {
+        val config = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setInitialLoadSizeHint(4)
+            .setPageSize(4)
+            .build()
+        return LivePagedListBuilder(localDataSource.getFavMovie(), config).build()
     }
 
-    override fun getFavTV(): LiveData<List<DataEntity>> {
-        return localDataSource.getFavTV()
+    override fun getFavTV(): LiveData<PagedList<DataEntity>> {
+        val config = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setInitialLoadSizeHint(4)
+            .setPageSize(4)
+            .build()
+        return LivePagedListBuilder(localDataSource.getFavTV(), config).build()
     }
 
     override fun checkFav(id: Int): LiveData<Boolean> {

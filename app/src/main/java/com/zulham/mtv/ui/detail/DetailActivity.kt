@@ -102,13 +102,13 @@ class DetailActivity : AppCompatActivity() {
                 .load(imgUrl + show?.backdropPath)
                 .error(R.drawable.ic_launcher_foreground)
                 .apply(RequestOptions().override(w, h))
-                .into(IV_posterDetailFav)
+                .into(IV_posterDetail)
 
-        titleDetailFav.text = show?.title
-        genreDetailFav.text = show?.genres?.map { genre -> genre.name }?.joinToString()
-        showIdFav.text = show?.id.toString()
-        showProductionFav.text = show?.productionCompanies?.map { production -> production.name }?.joinToString()
-        tv_justified_paragraphFav.text = show?.overview
+        titleDetail.text = show?.title
+        genreDetail.text = show?.genres?.map { genre -> genre.name }?.joinToString()
+        showId.text = show?.id.toString()
+        showProduction.text = show?.productionCompanies?.map { production -> production.name }?.joinToString()
+        tv_justified_paragraph.text = show?.overview
     }
 
     private fun backHome() {
@@ -118,9 +118,9 @@ class DetailActivity : AppCompatActivity() {
 
     private fun showLoading(state: Boolean) {
         if (state) {
-            detailProgressBarFav.visibility = View.VISIBLE
+            detailProgressBar.visibility = View.VISIBLE
         } else {
-            detailProgressBarFav.visibility = View.GONE
+            detailProgressBar.visibility = View.GONE
         }
     }
 

@@ -3,10 +3,11 @@ package com.zulham.mtv.viewmodel
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.zulham.mtv.data.remote.response.ResultsMovies
+import androidx.paging.PagedList
+import com.zulham.mtv.data.local.room.entity.DataEntity
 import com.zulham.mtv.data.repository.ShowRepository
 import com.zulham.mtv.ui.movie.MovieViewModel
-import com.zulham.mtv.utils.DummyData
+import com.zulham.mtv.vo.Resources
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.junit.Assert
 import org.junit.Before
@@ -31,7 +32,10 @@ class MovieViewModelTest {
     private lateinit var showRepository: ShowRepository
 
     @Mock
-    private lateinit var  observer: Observer<List<ResultsMovies>>
+    private lateinit var  observer: Observer<Resources<PagedList<DataEntity>>>
+
+    @Mock
+    private lateinit var pagedList: PagedList<DataEntity>
 
     @Before
     fun setUp(){
@@ -39,31 +43,39 @@ class MovieViewModelTest {
     }
 
     @Test
-    fun getDetail() {
-        val dummyData = DummyData.generateDummyMovie()
-        val resultMovie = arrayListOf<ResultsMovies>()
-        dummyData.forEach {
-            val entity =  ResultsMovies(
-                    it.description,
-                    it.title,
-                    it.img,
-                    it.backdrop,
-                    it.releaseDate,
-                    it.showId)
-            resultMovie.add(entity)
-        }
-        val movies = MutableLiveData<List<ResultsMovies>>()
-        movies.value = resultMovie
+    fun getListMovie() {
+        val dummyData = Resources.success(pagedList)
+
+        val movies = MutableLiveData<Resources<PagedList<DataEntity>>>()
+        movies.value = dummyData
 
         `when`(showRepository.getMovieList(1)).thenReturn(movies)
-        movieViewModel.setData(1)
-        val movieList = movieViewModel.getData()
+        movieViewModel.setDataMovie(1)
+        val movieList = movieViewModel.getDataMovie()
         verify(showRepository).getMovieList(1)
         Assert.assertNotNull(movieList)
         Assert.assertEquals( movies , movieList)
 
-        movieViewModel.getData().observeForever(observer)
-        verify(observer).onChanged(resultMovie)
+        movieViewModel.getDataMovie().observeForever(observer)
+        verify(observer).onChanged(dummyData)
+    }
+
+    @Test
+    fun getListTV() {
+        val dummyData = Resources.success(pagedList)
+
+        val tvs = MutableLiveData<Resources<PagedList<DataEntity>>>()
+        tvs.value = dummyData
+
+        `when`(showRepository.getTVShowList(1)).thenReturn(tvs)
+        movieViewModel.setDataTV(1)
+        val movieList = movieViewModel.getDataTV()
+        verify(showRepository).getTVShowList(1)
+        Assert.assertNotNull(movieList)
+        Assert.assertEquals( tvs , movieList)
+
+        movieViewModel.getDataMovie().observeForever(observer)
+        verify(observer).onChanged(dummyData)
     }
 
 }

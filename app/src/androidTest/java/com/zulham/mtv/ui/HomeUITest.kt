@@ -5,6 +5,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.swipeLeft
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
@@ -25,7 +26,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class HomeUITest {
 
-    private val listItemInTest = 9
+    private val listItemInTest = 1
 
     private val movieInTest = DummyData.generateDummyMovie()
 
@@ -64,7 +65,7 @@ class HomeUITest {
                 .perform(ViewPagerActions.scrollRight(true))
         onView(withId(R.id.tabs))
                 .check(matches(isDisplayed()))
-        onView(allOf(isDisplayed(), withId(R.id.rvTV)))
+        onView(allOf(isDisplayed(), withId(R.id.rvMovie)))
                 .perform(scrollToPosition<RecyclerView.ViewHolder>(tvInTest.size))
     }
 
@@ -73,21 +74,23 @@ class HomeUITest {
         onView(allOf(isDisplayed(), withId(R.id.rvMovie)))
                 .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(listItemInTest, click()))
 
-        onView(withId(R.id.titleDetailFav))
-                .check(matches(isDisplayed()))
+        onView(withId(R.id.titleDetail))
+            .check(matches(isDisplayed()))
 
-        onView(withId(R.id.genreDetailFav))
-                .check(matches(isDisplayed()))
+        onView(withId(R.id.genreDetail))
+            .check(matches(isDisplayed()))
 
-        onView(withId(R.id.showIdFav))
-                .check(matches(isDisplayed()))
+        onView(withId(R.id.showId))
+            .check(matches(isDisplayed()))
 
-        onView(withId(R.id.showProductionFav))
-                .check(matches(isDisplayed()))
+        onView(withId(R.id.showProduction))
+            .check(matches(isDisplayed()))
 
-        onView(withId(R.id.tv_justified_paragraphFav))
-                .check(matches(isDisplayed()))
+        onView(withId(R.id.tv_justified_paragraph))
+            .check(matches(isDisplayed()))
 
+        onView(withId(R.id.fabDetail))
+            .perform(click())
     }
 
     @Test
@@ -96,23 +99,125 @@ class HomeUITest {
                 .perform(ViewPagerActions.scrollRight(true))
         onView(withId(R.id.tabs))
                 .check(matches(isDisplayed()))
-        onView(allOf(isDisplayed(), withId(R.id.rvTV)))
+        onView(allOf(isDisplayed(), withId(R.id.rvMovie)))
                 .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(listItemInTest, click()))
 
-        onView(withId(R.id.titleDetailFav))
+        onView(withId(R.id.titleDetail))
                 .check(matches(isDisplayed()))
+
+        onView(withId(R.id.genreDetail))
+                .check(matches(isDisplayed()))
+
+        onView(withId(R.id.showId))
+                .check(matches(isDisplayed()))
+
+        onView(withId(R.id.showProduction))
+                .check(matches(isDisplayed()))
+
+        onView(withId(R.id.tv_justified_paragraph))
+                .check(matches(isDisplayed()))
+
+        onView(withId(R.id.fabDetail))
+            .perform(click())
+    }
+
+    @Test
+    fun loadMovieFav(){
+        onView(withId(R.id.fabMenu))
+            .perform(click())
+        onView(withId(R.id.tabs))
+            .check(matches(isDisplayed()))
+        onView(allOf(isDisplayed(), withId(R.id.rvFavorite)))
+            .perform(scrollToPosition<RecyclerView.ViewHolder>(movieInTest.size))
+        onView(allOf(isDisplayed(), withId(R.id.rvFavorite)))
+            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeLeft()))
+    }
+
+    @Test
+    fun loadTVFav(){
+        onView(withId(R.id.fabMenu))
+            .perform(click())
+        onView(withId(R.id.view_pager))
+            .perform(ViewPagerActions.scrollRight(true))
+        onView(withId(R.id.tabs))
+            .check(matches(isDisplayed()))
+        onView(allOf(isDisplayed(), withId(R.id.rvFavorite)))
+            .perform(scrollToPosition<RecyclerView.ViewHolder>(tvInTest.size))
+
+    }
+
+    @Test
+    fun loadDetailMovieFav(){
+        onView(withId(R.id.fabMenu))
+            .perform(click())
+
+        onView(allOf(isDisplayed(), withId(R.id.rvFavorite)))
+            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+
+        onView(withId(R.id.titleDetailFav))
+            .check(matches(isDisplayed()))
 
         onView(withId(R.id.genreDetailFav))
-                .check(matches(isDisplayed()))
+            .check(matches(isDisplayed()))
 
         onView(withId(R.id.showIdFav))
-                .check(matches(isDisplayed()))
+            .check(matches(isDisplayed()))
 
         onView(withId(R.id.showProductionFav))
-                .check(matches(isDisplayed()))
+            .check(matches(isDisplayed()))
 
         onView(withId(R.id.tv_justified_paragraphFav))
-                .check(matches(isDisplayed()))
+            .check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun loadDetailTVFav(){
+        onView(withId(R.id.fabMenu))
+            .perform(click())
+
+        onView(withId(R.id.view_pager))
+            .perform(ViewPagerActions.scrollRight(true))
+        onView(withId(R.id.tabs))
+            .check(matches(isDisplayed()))
+        onView(allOf(isDisplayed(), withId(R.id.rvFavorite)))
+            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+
+        onView(withId(R.id.titleDetailFav))
+            .check(matches(isDisplayed()))
+
+        onView(withId(R.id.genreDetailFav))
+            .check(matches(isDisplayed()))
+
+        onView(withId(R.id.showIdFav))
+            .check(matches(isDisplayed()))
+
+        onView(withId(R.id.showProductionFav))
+            .check(matches(isDisplayed()))
+
+        onView(withId(R.id.tv_justified_paragraphFav))
+            .check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun loadMovieShowFavDelete(){
+        onView(withId(R.id.fabMenu))
+            .perform(click())
+        onView(withId(R.id.tabs))
+            .check(matches(isDisplayed()))
+        onView(allOf(isDisplayed(), withId(R.id.rvFavorite)))
+            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeLeft()))
+    }
+
+    @Test
+    fun loadTVShowFavDelete(){
+        onView(withId(R.id.fabMenu))
+            .perform(click())
+        onView(withId(R.id.view_pager))
+            .perform(ViewPagerActions.scrollRight(true))
+        onView(withId(R.id.tabs))
+            .check(matches(isDisplayed()))
+        onView(allOf(isDisplayed(), withId(R.id.rvFavorite)))
+            .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, swipeLeft()))
     }
 
 }
