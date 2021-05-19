@@ -3,6 +3,7 @@ package com.zulham.mtv.data
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.DataSource
+import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.verify
 import com.zulham.mtv.data.local.LocalDataSource
 import com.zulham.mtv.data.local.room.entity.DataEntity
@@ -10,10 +11,7 @@ import com.zulham.mtv.data.local.room.entity.DetailEntity
 import com.zulham.mtv.data.local.room.entity.GenresItemMovies
 import com.zulham.mtv.data.local.room.entity.ProductionCompaniesItemMovies
 import com.zulham.mtv.data.remote.RemoteDataSource
-import com.zulham.mtv.utils.AppExecutors
-import com.zulham.mtv.utils.DummyData
-import com.zulham.mtv.utils.LiveDataUtilsTest
-import com.zulham.mtv.utils.PagedListUtilsTest
+import com.zulham.mtv.utils.*
 import com.zulham.mtv.vo.Resources
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.junit.Assert
@@ -22,12 +20,15 @@ import org.junit.Test
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 
+
 @Suppress("UNCHECKED_CAST")
 @InternalCoroutinesApi
 class ShowRepositoryTest {
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    private val testExecutors = AppExecutors(TestExecutors, TestExecutors, TestExecutors)
 
     private val remote = mock(RemoteDataSource::class.java)
     private val local = mock(LocalDataSource::class.java)
@@ -136,6 +137,30 @@ class ShowRepositoryTest {
 
         Assert.assertNotNull(result)
         Assert.assertEquals(dummyData.size, result.size)
+
+    }
+
+    @Test
+    fun addFav(){
+        val id = 1
+
+        `when`(appExecutors.diskIO()).thenReturn(testExecutors.diskIO())
+        doNothing().`when`(local).setFavourite(id)
+
+        fakeShowRepository.setFav(id)
+        verify(local).setFavourite(id)
+
+    }
+
+    @Test
+    fun delFav(){
+        val id = 0
+
+        `when`(appExecutors.diskIO()).thenReturn(testExecutors.diskIO())
+        doNothing().`when`(local).deleteFav(id)
+
+        fakeShowRepository.deleteFav(id)
+        verify(local).deleteFav(id)
 
     }
 

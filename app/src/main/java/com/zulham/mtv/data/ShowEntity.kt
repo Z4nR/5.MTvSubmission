@@ -15,10 +15,12 @@ data class ShowEntity(
         val backdrop: String? = ""
 ) : Parcelable
 
+@Parcelize
 data class PH (
         val name: String? = ""
-)
+) : Parcelable
 
+@Parcelize
 data class Genres (
         val name: String? = ""
-)
+) : Parcelable

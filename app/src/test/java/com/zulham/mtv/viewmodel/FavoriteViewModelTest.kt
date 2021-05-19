@@ -4,10 +4,12 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
+import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.verify
 import com.zulham.mtv.data.local.room.entity.DataEntity
 import com.zulham.mtv.data.repository.ShowRepository
 import com.zulham.mtv.ui.favorite.ui.main.list.FavoriteViewModel
+import com.zulham.mtv.utils.DummyData
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.junit.Assert
 import org.junit.Before
@@ -75,6 +77,26 @@ class FavoriteViewModelTest {
 
         favoriteViewModel.favTVShow().observeForever(observer)
         verify(observer).onChanged(dummyData)
+    }
+
+    @Test
+    fun deleteFav(){
+        val dataDetail = DummyData.generateDummyMovie()[0]
+        val tvDetail = DataEntity(
+            dataDetail.description,
+            dataDetail.title,
+            dataDetail.img,
+            dataDetail.backdrop,
+            dataDetail.releaseDate,
+            dataDetail.showId,
+            false,
+            null
+        )
+        val boolean = 1
+        doNothing().`when`(showRepository).deleteFav(boolean)
+        favoriteViewModel.swipeDeleteFav(tvDetail)
+
+        verify(showRepository).deleteFav(boolean)
     }
 
 }
